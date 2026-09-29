@@ -196,6 +196,17 @@ MOP_WATER_LEVEL_NAMES = {
     MopWaterLevel.HIGH: "High",
 }
 
+# Station tank levels (StationResponse.WaterLevel enum: 0=EMPTY, 1=VERY_LOW,
+# 2=LOW, 3=MEDIUM, 4=HIGH). Used for both the clean-water and dirty-water
+# tank level sensors.
+STATION_WATER_LEVEL_NAMES = {
+    0: "Empty",
+    1: "Very low",
+    2: "Low",
+    3: "Medium",
+    4: "High",
+}
+
 
 # Additional DPS 154 mappings for enhanced functionality
 CLEANING_INTENSITY_NAMES = {
