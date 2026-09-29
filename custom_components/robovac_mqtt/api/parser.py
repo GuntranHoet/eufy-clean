@@ -246,11 +246,10 @@ def _process_station_status(
         track_received_field(state, changes, "dock_status")
 
         if station.HasField("clean_water"):
+            # clean water
             changes["station_clean_water"] = station.clean_water.value
             track_received_field(state, changes, "station_clean_water")
-            # dirty_level is a proto3 enum without field presence, so it
-            # cannot use HasField(); the station always reports it alongside
-            # clean_water, so read it here.
+            # dirty water
             changes["station_dirty_water"] = STATION_WATER_LEVEL_NAMES.get(
                 station.dirty_level, "Unknown"
             )
