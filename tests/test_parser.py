@@ -17,6 +17,8 @@ from custom_components.robovac_mqtt.proto.cloud.app_device_info_pb2 import Devic
 from custom_components.robovac_mqtt.proto.cloud.clean_statistics_pb2 import (
     CleanStatistics,
 )
+from custom_components.robovac_mqtt.proto.cloud.common_pb2 import Numerical
+from custom_components.robovac_mqtt.proto.cloud.station_pb2 import StationResponse
 from custom_components.robovac_mqtt.proto.cloud.language_pb2 import LanguageResponse
 from custom_components.robovac_mqtt.utils import encode_message
 
@@ -709,6 +711,35 @@ def test_novel_device_info_dock_firmware():
     new_state, _ = update_state(state, {DPS_MAP["MAP_MANAGE"]: encoded})
     assert new_state.dock_firmware_version == "2.3.7"
     assert "dock_firmware_version" in new_state.received_fields
+
+
+def test_station_status_dirty_water_level():
+    """STATION_STATUS maps StationResponse.dirty_level to station_dirty_water."""
+    station = StationResponse(
+        clean_water=Numerical(value=52),
+        dirty_level=4,  # WaterLevel.HIGH: dirty tank nearly full
+    )
+    encoded = encode_message(station)
+    state = VacuumState()
+    new_state, _ = update_state(state, {DPS_MAP["STATION_STATUS"]: encoded})
+    assert new_state.station_dirty_water == "High"
+    assert "station_dirty_water" in new_state.received_fields
+    # Existing clean-water parsing is unaffected
+    assert new_state.station_clean_water == 52
+    assert "station_clean_water" in new_state.received_fields
+
+
+def test_station_status_dirty_water_level_empty():
+    """STATION_STATUS maps dirty_level=EMPTY to 'Empty'."""
+    station = StationResponse(
+        clean_water=Numerical(value=100),
+        dirty_level=0,  # WaterLevel.EMPTY
+    )
+    encoded = encode_message(station)
+    state = VacuumState()
+    new_state, _ = update_state(state, {DPS_MAP["STATION_STATUS"]: encoded})
+    assert new_state.station_dirty_water == "Empty"
+    assert "station_dirty_water" in new_state.received_fields
 
 
 def test_cleaning_stats_user_total():
