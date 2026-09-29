@@ -199,12 +199,20 @@ MOP_WATER_LEVEL_NAMES = {
 # Station tank levels (StationResponse.WaterLevel enum: 0=EMPTY, 1=VERY_LOW,
 # 2=LOW, 3=MEDIUM, 4=HIGH). Used for both the clean-water and dirty-water
 # tank level sensors.
+class StationWaterLevel(int, Enum):
+    EMPTY = 0
+    VERY_LOW = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+
+
 STATION_WATER_LEVEL_NAMES = {
-    0: "Empty",
-    1: "Very low",
-    2: "Low",
-    3: "Medium",
-    4: "High",
+    StationWaterLevel.EMPTY: "Empty",
+    StationWaterLevel.VERY_LOW: "Very low",
+    StationWaterLevel.LOW: "Low",
+    StationWaterLevel.MEDIUM: "Medium",
+    StationWaterLevel.HIGH: "High",
 }
 
 
