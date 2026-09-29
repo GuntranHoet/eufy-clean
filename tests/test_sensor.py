@@ -107,6 +107,31 @@ def test_water_level_sensor(mock_coordinator):
     assert entity.native_value == 0
 
 
+def test_dirty_water_level_sensor(mock_coordinator):
+    """Test dirty water level sensor with availability based on received fields."""
+    entity = RoboVacSensor(
+        mock_coordinator,
+        "dirty_water_level",
+        "Dirty Water Level",
+        lambda s: s.station_dirty_water,
+        availability_fn=lambda s: "station_dirty_water" in s.received_fields,
+    )
+
+    # Unavailable until the station reports a dirty-water level
+    assert "station_dirty_water" not in mock_coordinator.data.received_fields
+    assert entity.available is False
+
+    # Simulate receiving dirty water level data from the station
+    mock_coordinator.data.received_fields.add("station_dirty_water")
+    mock_coordinator.data.station_dirty_water = "High"
+
+    assert entity.available is True
+    assert entity.native_value == "High"
+
+    mock_coordinator.data.station_dirty_water = "Empty"
+    assert entity.native_value == "Empty"
+
+
 def test_error_message_sensor(mock_coordinator):
     """Test error message sensor."""
     mock_coordinator.data.error_message = "Roller Brush Stuck"
